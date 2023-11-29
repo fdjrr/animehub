@@ -22,6 +22,6 @@ export const reproduce = (data, gap) => {
   const end = start + gap;
 
   return {
-    data: data.slice(start, end),
+    data: data?.slice(start, end),
   };
 };
