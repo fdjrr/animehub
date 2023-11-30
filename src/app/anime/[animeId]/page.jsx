@@ -1,18 +1,39 @@
+import ButtonCollection from "@/components/ButtonCollection";
 import VideoPlayer from "@/components/VideoPlayer";
 import { getAnimeResponse } from "@/libs/api";
+import { authUserSession } from "@/libs/auth";
+import prisma from "@/libs/prisma";
 import Image from "next/image";
 
 export default async function Page({ params: { animeId } }) {
+  const user = await authUserSession();
+
+  const collection = await prisma.collections.findFirst({
+    where: {
+      user_id: user?.id,
+      mal_id: animeId,
+    },
+  });
+
+  console.log(collection);
+
   let anime = await getAnimeResponse(`anime/${animeId}`);
   anime = { ...anime.data };
 
   return (
     <>
-      <div className="pt-4 px-4">
-        <h1 className="text-2xl text-color-primary text-center   ">
-          {anime.title}
-        </h1>
-        <div className="pt-4 px-4 flex gap-2 text-color-primary overflow-x-auto">
+      <div className="pt-4 px-4 text-color-primary">
+        <h1 className="text-2xl text-center mb-5">{anime.title}</h1>
+        <div className="flex justify-center items-center">
+          <Image
+            src={anime.images.webp.image_url}
+            width={250}
+            height={250}
+            alt="..."
+            className="rounded object-cover mb-5"
+          ></Image>
+        </div>
+        <div className="flex justify-center gap-2 items-center text-color-primary overflow-x-auto mb-5">
           <div className="w-36 flex flex-col justify-center items-center rounded border border-color-primary p-2">
             <h3 className="mb-1 font-semibold text-color-accent">Peringkat</h3>
             <p className="text-sm">{anime.rank}</p>
@@ -30,18 +51,18 @@ export default async function Page({ params: { animeId } }) {
             <p className="text-sm">{anime.episodes}</p>
           </div>
         </div>
-        <div className="pt-4 px-4 flex sm:flex-nowrap flex-wrap gap-2 text-color-primary">
-          <Image
-            src={anime.images.webp.image_url}
-            width={250}
-            height={250}
-            alt="..."
-            className="w-full rounded object-cover"
-          ></Image>
-          <article className="mb-3">
+
+        <div className="flex justify-center items-center">
+          <article className="w-full lg:w-[50%] mb-5">
             <p className="text-justify">{anime.synopsis}</p>
           </article>
         </div>
+
+        {!collection && (
+          <div className="text-center mb-5">
+            <ButtonCollection mal_id={anime.mal_id} />
+          </div>
+        )}
       </div>
 
       <VideoPlayer videoId={anime.trailer.youtube_id} />

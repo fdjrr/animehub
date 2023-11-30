@@ -52,3 +52,9 @@
 
 1. Kerjain Tugas Sesi 8 (Middleware) ✅
 2. UI Dashboard Anime Collection
+
+# Sesi 10
+
+1. Fix Button Page Not Found ✅
+2. Upgrade Next JS to NextJS ✅
+3. Connect to Database using Prisma ✅
